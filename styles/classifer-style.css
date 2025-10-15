@@ -37,7 +37,6 @@
   --bar-height: calc(100% + 10px);
 }
 
-/* ======================== BASE NOTIFICATION CARD ======================== */
 .notification-card {
   position: relative;
   border-radius: var(--card-border-radius);

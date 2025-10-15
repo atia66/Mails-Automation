@@ -32,11 +32,11 @@
   --border-radius-lg: 16px;
   --border-radius-xl: 20px;
 
-  /* Sidebar widths */
-  --sidebar-width-expanded: 320px;
-  --sidebar-width-collapsed: 64px;
+  --sidebar-width-expanded: 25%;
+  --sidebar-width-collapsed:96px;
   
 }
+
 
 * {
   margin: 0;

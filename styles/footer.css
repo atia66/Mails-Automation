@@ -17,6 +17,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  -webkit-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  -moz-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  -ms-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  -o-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .chat-trigger:hover {
@@ -149,7 +153,7 @@
   bottom: 0;
   background: var(--sidebar-bg);
   border-top: 1px solid var(--border-color);
-  padding: 12px 20px;
+  
   box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
   backdrop-filter: blur(10px);
   z-index: 100;
