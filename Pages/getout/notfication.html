@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Enhanced Notification System</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <style>
+        :root {
+            --primary-color: #667eea;
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-color: #4facfe;
+            --accent-color: #fc466b;
+            --background: #0f0f23;
+            --surface: rgba(255, 255, 255, 0.05);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.5);
+            --shadow-primary: rgba(102, 126, 234, 0.2);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--background);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .toolbar-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: var(--surface);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            backdrop-filter: blur(10px);
+        }
+
+        .toolbar-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--primary-color);
+            color: var(--text-primary);
+        }
+
+        .toolbar-btn.active {
+            background: var(--primary-gradient);
+            border-color: transparent;
+            color: white;
+        }
+
+        .toolbar-btn i {
+            font-size: 16px;
+        }
+
+        /* Grid View Styles */
+        .notifications-grid {
+            display: grid;
+            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            padding-bottom: 32px;
+        }
+
+        .notification-card.grid-view {
+            background: linear-gradient(
+                145deg,
+                rgba(255, 255, 255, 0.1) 0%,
+                rgba(255, 255, 255, 0.05) 100%
+            );
+            backdrop-filter: blur(25px);
+            border: 1px solid transparent;
+            border-radius: 18px;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            cursor: pointer;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2), 
+                inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .notification-card.grid-view::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                145deg,
+                rgba(102, 126, 234, 0.1) 0%,
+                rgba(79, 172, 254, 0.08) 50%,
+                rgba(252, 70, 107, 0.06) 100%
+            );
+            opacity: 0;
+            transition: all 0.5s ease;
+            z-index: -1;
+            border-radius: 18px;
+        }
+
+        .notification-card.grid-view::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--primary-gradient);
+            opacity: 0;
+            transition: all 0.4s ease;
+        }
+
+        .notification-card.grid-view:hover {
+            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.25), 
+                0 12px 24px var(--shadow-primary),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            transform: translateY(-5px);
+        }
+
+        .notification-card.grid-view:hover::before {
+            opacity: 1;
+        }
+
+        .notification-card.grid-view:hover::after {
+            opacity: 1;
+        }
+
+        /* List View Styles */
+        .notifications-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .notification-card.list-view {
+            background: linear-gradient(
+                90deg,
+                rgba(255, 255, 255, 0.08) 0%,
+                rgba(255, 255, 255, 0.04) 100%
+            );
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .notification-card.list-view::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--primary-gradient);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .notification-card.list-view:hover {
+            background: linear-gradient(
+                90deg,
+                rgba(255, 255, 255, 0.12) 0%,
+                rgba(255, 255, 255, 0.06) 100%
+            );
+            border-color: rgba(102, 126, 234, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15), 
+                0 4px 12px var(--shadow-primary);
+        }
+
+        .notification-card.list-view:hover::before {
+            opacity: 1;
+        }
+
+        /* Card Content */
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 20px 0 20px;
+        }
+
+        .sender-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sender-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 16px;
+            color: white;
+        }
+
+        .sender-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sender-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 16px;
+        }
+
+        .notification-time {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-top: 2px;
+        }
+
+        .read-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            margin-left: 8px;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .card-action-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-action-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--text-primary);
+        }
+
+        .card-action-btn.starred {
+            color: #fbbf24;
+        }
+
+        .card-content {
+            padding: 16px 20px;
+        }
+
+        .notification-subject {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .notification-preview {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.5;
+            opacity: 0.9;
+        }
+
+        .card-footer {
+            padding: 0 20px 20px 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 10px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--primary-color);
+            color: var(--text-primary);
+        }
+
+        .action-btn.primary {
+            background: var(--primary-gradient);
+            border-color: transparent;
+            color: white;
+        }
+
+        .action-btn.primary:hover {
+            box-shadow: 0 4px 12px var(--shadow-primary);
+            transform: translateY(-1px);
+        }
+
+        .priority-indicator {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 4px;
+            height: 100%;
+            z-index: 10;
+        }
+
+        .priority-indicator.high {
+            background: var(--error);
+        }
+
+        .priority-indicator.medium {
+            background: var(--warning);
+        }
+
+        .priority-indicator.low {
+            background: var(--success);
+        }
+
+        /* List view specific adjustments */
+        .notification-card.list-view .card-header {
+            padding: 16px 20px 0 20px;
+        }
+
+        .notification-card.list-view .card-content {
+            padding: 12px 20px;
+        }
+
+        .notification-card.list-view .card-footer {
+            padding: 0 20px 16px 20px;
+        }
+
+        .notification-card.list-view .sender-avatar {
+            width: 40px;
+            height: 40px;
+            font-size: 14px;
+        }
+
+        .notification-card.list-view .notification-subject {
+            font-size: 16px;
+        }
+
+        .notification-card.list-view .notification-preview {
+            font-size: 13px;
+        }
+
+        /* Hide elements when not read */
+        .notification-card[data-read="true"] .read-indicator {
+            display: none;
+        }
+
+        /* Animation for view transitions */
+        .notifications-container {
+            transition: all 0.5s ease;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .notifications-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            
+            .toolbar {
+                justify-content: center;
+            }
+            
+            .toolbar-btn span {
+                display: none;
+            }
+            
+            .card-footer {
+                flex-direction: column;
+            }
+            
+            .action-btn {
+                justify-content: center;
+            }
+        }
+
+        /* Loading and empty states */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>Notifications</h1>
+                <p style="color: var(--text-secondary);">Stay updated with your latest messages and alerts</p>
+            </div>
+            <div class="toolbar">
+                <button class="toolbar-btn active" onclick="toggleView('grid')" title="Grid View">
+                    <i class="fas fa-th"></i>
+                    <span>Grid</span>
+                </button>
+                <button class="toolbar-btn" onclick="toggleView('list')" title="List View">
+                    <i class="fas fa-list"></i>
+                    <span>List</span>
+                </button>
+                <button class="toolbar-btn" onclick="refreshNotifications()" title="Refresh">
+                    <i class="fas fa-sync-alt"></i>
+                    <span>Refresh</span>
+                </button>
+            </div>
+            <div class="notifications-container">
+                <div class="notifications-grid" id="notificationsGrid">
+                    <div
+                        class="notification-card grid-view message"
+                        data-priority="high"
+                        data-read="false"
+                        data-starred="false"
+                    >
+                        <div class="priority-indicator high"></div>
+                        <div class="card-header">
+                            <div class="sender-info">
+                                <div class="sender-avatar">SJ</div>
+                                <div class="sender-details">
+                                    <div class="sender-name">Sarah Johnson</div>
+                                    <div class="notification-time">
+                                        <i class="fas fa-clock"></i>
+                                        2 minutes ago
+                                        <div class="read-indicator"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-actions">
+                                <button class="card-action-btn" onclick="toggleStar(this)" title="Star">
+                                    <i class="fas fa-star"></i>
+                                </button>
+                                <button class="card-action-btn" onclick="toggleRead(this)" title="Mark as read">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button class="card-action-btn" onclick="showCardMenu(this)" title="More options">
+                                    <i class="fas fa-ellipsis-h"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="notification-subject">System Update Available</div>
+                            <div class="notification-preview">
+                                A new system update is available with improved performance, new features, and security enhancements. Update now to get the latest improvements.
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <button class="action-btn primary" onclick="updateSystem(this)">
+                                <i class="fas fa-download"></i>
+                                Update Now
+                            </button>
+                            <button class="action-btn" onclick="viewChangelog(this)">
+                                <i class="fas fa-list"></i>
+                                View Changes
+                            </button>
+                            <button class="action-btn" onclick="scheduleUpdate(this)">
+                                <i class="fas fa-calendar"></i>
+                                Schedule Later
+                            </button>
+                        </div>
+                    </div>
+                    <div
+                        class="notification-card grid-view message"
+                        data-priority="medium"
+                        data-read="true"
+                        data-starred="true"
+                    >
+                        <div class="priority-indicator medium"></div>
+                        <div class="card-header">
+                            <div class="sender-info">
+                                <div class="sender-avatar">MK</div>
+                                <div class="sender-details">
+                                    <div class="sender-name">Mike Kumar</div>
+                                    <div class="notification-time">
+                                        <i class="fas fa-clock"></i>
+                                        15 minutes ago
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-actions">
+                                <button class="card-action-btn starred" onclick="toggleStar(this)" title="Star">
+                                    <i class="fas fa-star"></i>
+                                </button>
+                                <button class="card-action-btn" onclick="toggleRead(this)" title="Mark as unread">
+                                    <i class="fas fa-envelope"></i>
+                                </button>
+                                <button class="card-action-btn" onclick="showCardMenu(this)" title="More options">
+                                    <i class="fas fa-ellipsis-h"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="notification-subject">Meeting Reminder</div>
+                            <div class="notification-preview">
+                                Don't forget about our team meeting scheduled for 3:00 PM today. We'll be discussing the Q4 project roadmap and budget allocations.
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <button class="action-btn primary" onclick="joinMeeting(this)">
+                                <i class="fas fa-video"></i>
+                                Join Meeting
+                            </button>
+                            <button class="action-btn" onclick="viewCalendar(this)">
+                                <i class="fas fa-calendar"></i>
+                                View Calendar
+                            </button>
+                        </div>
+                    </div>
+                    <div
+                        class="notification-card grid-view message"
+                        data-priority="low"
+                        data-read="false"
+                        data-starred="false"
+                    >
+                        <div class="priority-indicator low"></div>
+                        <div class="card-header">
+                            <div class="sender-info">
+                                <div class="sender-avatar">AL</div>
+                                <div class="sender-details">
+                                    <div class="sender-name">Alice Lee</div>
+                                    <div class="notification-time">
+                                        <i class="fas fa-clock"></i>
+                                        1 hour ago
+                                        <div class="read-indicator"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-actions">
+                                <button class="card-action-btn" onclick="toggleStar(this)" title="Star">
+                                    <i class="fas fa-star"></i>
+                                </button>
+                                <button class="card-action-btn" onclick="toggleRead(this)" title="Mark as read">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button class="card-action-btn" onclick="showCardMenu(this)" title="More options">
+                                    <i class="fas fa-ellipsis-h"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="notification-subject">Weekly Report Ready</div>
+                            <div class="notification-preview">
+                                Your weekly analytics report has been generated and is ready for review. This week shows a 15% increase in user engagement.
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <button class="action-btn primary" onclick="viewReport(this)">
+                                <i class="fas fa-chart-bar"></i>
+                                View Report
+                            </button>
+                            <button class="action-btn" onclick="downloadReport(this)">
+                                <i class="fas fa-download"></i>
+                                Download
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+        let currentView = 'grid';
+
+        function toggleView(view) {
+            currentView = view;
+            const container = document.querySelector('.notifications-container');
+            const grid = document.getElementById('notificationsGrid');
+            const toolbarBtns = document.querySelectorAll('.toolbar-btn');
+            
+            // Update toolbar buttons
+            toolbarBtns.forEach(btn => btn.classList.remove('active'));
+            event.target.closest('.toolbar-btn').classList.add('active');
+            
+            if (view === 'list') {
+                grid.className = 'notifications-list';
+                document.querySelectorAll('.notification-card').forEach(card => {
+                    card.className = card.className.replace('grid-view', 'list-view');
+                });
+            } else {
+                grid.className = 'notifications-grid';
+                document.querySelectorAll('.notification-card').forEach(card => {
+                    card.className = card.className.replace('list-view', 'grid-view');
+                });
+            }
+        }
+
+        function toggleStar(btn) {
+            const card = btn.closest('.notification-card');
+            const isStarred = card.dataset.starred === 'true';
+            
+            card.dataset.starred = !isStarred;
+            btn.classList.toggle('starred');
+            
+            // Add visual feedback
+            btn.style.transform = 'scale(1.2)';
+            setTimeout(() => {
+                btn.style.transform = '';
+            }, 200);
+        }
+
+        function toggleRead(btn) {
+            const card = btn.closest('.notification-card');
+            const isRead = card.dataset.read === 'true';
+            const icon = btn.querySelector('i');
+            
+            card.dataset.read = !isRead;
+            
+            if (!isRead) {
+                icon.className = 'fas fa-envelope';
+                btn.title = 'Mark as unread';
+            } else {
+                icon.className = 'fas fa-check';
+                btn.title = 'Mark as read';
+            }
+            
+            // Add visual feedback
+            btn.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+                btn.style.transform = '';
+            }, 200);
+        }
+
+        function showCardMenu(btn) {
+            // Simple menu simulation
+            const options = ['Archive', 'Delete', 'Move to folder', 'Set reminder'];
+            const choice = prompt('Choose an option:\n' + options.map((opt, i) => `${i + 1}. ${opt}`).join('\n'));
+            
+            if (choice && choice >= 1 && choice <= options.length) {
+                alert(`Selected: ${options[choice - 1]}`);
+            }
+        }
+
+        function updateSystem(btn) {
+            const card = btn.closest('.notification-card');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fas fa-check"></i> Updated';
+                btn.style.background = 'var(--success)';
+                setTimeout(() => {
+                    card.style.opacity = '0.5';
+                }, 1000);
+            }, 2000);
+        }
+
+        function viewChangelog(btn) {
+            alert('Changelog:\n• Improved system performance by 25%\n• Added new notification features\n• Enhanced security protocols\n• Bug fixes and stability improvements');
+        }
+
+        function scheduleUpdate(btn) {
+            const time = prompt('Schedule update for (e.g., "tonight at 11 PM"):');
+            if (time) {
+                alert(`Update scheduled for: ${time}`);
+            }
+        }
+
+        function joinMeeting(btn) {
+            alert('Opening meeting room...');
+            btn.innerHTML = '<i class="fas fa-video"></i> Joining...';
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fas fa-video"></i> In Meeting';
+                btn.style.background = 'var(--success)';
+            }, 1500);
+        }
+
+        function viewCalendar(btn) {
+            alert('Opening calendar application...');
+        }
+
+        function viewReport(btn) {
+            alert('Loading analytics report...');
+        }
+
+        function downloadReport(btn) {
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Downloading...';
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fas fa-check"></i> Downloaded';
+                btn.style.background = 'var(--success)';
+            }, 2000);
+        }
+
+        function refreshNotifications() {
+            const refreshBtn = document.querySelector('.toolbar-btn[onclick="refreshNotifications()"]');
+            const icon = refreshBtn.querySelector('i');
+            
+            icon.style.animation = 'spin 1s linear infinite';
+            
+            setTimeout(() => {
+                icon.style.animation = '';
+                // Simulate new notification
+                const grid = document.getElementById('notificationsGrid');
+                const newNotification = createNotification('System', 'JS', 'Backup Complete', 'Your daily backup has been completed successfully.', 'low', 'just now');
+                
+                if (currentView === 'grid') {
+                    newNotification.className = 'notification-card grid-view message';
+                } else {
+                    newNotification.className = 'notification-card list-view message';
+                }
+                
+                grid.insertBefore(newNotification, grid.firstChild);
+                
+                // Animate in
+                newNotification.style.opacity = '0';
+                newNotification.style.transform = 'translateY(-20px)';
+                setTimeout(() => {
+                    newNotification.style.transition = 'all 0.5s ease';
+                    newNotification.style.opacity = '1';
+                    newNotification.style.transform = 'translateY(0)';
+                }, 100);
+            }, 1000);
+        }
+
+        function createNotification(senderName, initials, subject, preview, priority, time) {
+            const notification = document.createElement('div');
+            notification.setAttribute('data-priority', priority);
+            notification.setAttribute('data-read', 'false');
+            notification.setAttribute('data-starred', 'false');
+            
+            notification.innerHTML = `
+                <div class="priority-indicator ${priority}"></div>
+                <div class="card-header">
+                    <div class="sender-info">
+                        <div class="sender-avatar">${initials}</div>
+                        <div class="sender-details">
+                            <div class="sender-name">${senderName}</div>
+                            <div class="notification-time">
+                                <i class="fas fa-clock"></i>
+                                ${time}
+                                <div class="read-indicator"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-actions">
+                        <button class="card-action-btn" onclick="toggleStar(this)" title="Star">
+                            <i class="fas fa-star"></i>
+                        </button>
+                        <button class="card-action-btn" onclick="toggleRead(this)" title="Mark as read">
+                            <i class="fas fa-check"></i>
+                        </button>
+                        <button class="card-action-btn" onclick="showCardMenu(this)" title="More options">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="notification-subject">${subject}</div>
+                    <div class="notification-preview">${preview}</div>
+                </div>
+                <div class="card-footer">
+                    <button class="action-btn primary" onclick="handlePrimaryAction(this)">
+                        <i class="fas fa-eye"></i>
+                        View Details
+                    </button>
+                    <button class="action-btn" onclick="handleSecondaryAction(this)">
+                        <i class="fas fa-archive"></i>
+                        Archive
+                    </button>
+                </div>
+            `;
+            
+            return notification;
+        }
+
+        function handlePrimaryAction(btn) {
+            alert('Opening notification details...');
+        }
+
+        function handleSecondaryAction(btn) {
+            const card = btn.closest('.notification-card');
+            card.style.transform = 'translateX(-100%)';
+            card.style.opacity = '0';
+            setTimeout(() => {
+                card.remove();
+            }, 500);
+        }
+
+        // Add spin animation for refresh
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes spin {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
+        </script>
+    </body>
+</html>

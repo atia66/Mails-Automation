@@ -1,0 +1,286 @@
+/* ======================== CSS CUSTOM PROPERTIES ======================== */
+:root {
+  /* Priority Colors */
+  --priority-risk-bg: linear-gradient(145deg, rgba(220, 53, 69, 0.08) 0%, rgba(185, 28, 28, 0.04) 100%);
+  --priority-risk-border: rgba(220, 53, 69, 0.15);
+  --priority-risk-shadow: 0 4px 12px rgba(220, 53, 69, 0.12);
+  
+  --priority-high-bg: linear-gradient(145deg, rgba(245, 158, 11, 0.08) 0%, rgba(217, 119, 6, 0.04) 100%);
+  --priority-high-border: rgba(245, 158, 11, 0.15);
+  --priority-high-shadow: 0 4px 12px rgba(245, 158, 11, 0.12);
+  
+  --priority-mid-bg: linear-gradient(145deg, rgba(59, 130, 246, 0.08) 0%, rgba(30, 64, 175, 0.04) 100%);
+  --priority-mid-border: rgba(59, 130, 246, 0.15);
+  --priority-mid-shadow: 0 4px 12px rgba(59, 130, 246, 0.12);
+  
+  --priority-low-bg: linear-gradient(145deg, rgba(34, 197, 94, 0.08) 0%, rgba(21, 128, 61, 0.04) 100%);
+  --priority-low-border: rgba(34, 197, 94, 0.15);
+  --priority-low-shadow: 0 4px 12px rgba(34, 197, 94, 0.12);
+
+  /* Type Colors */
+  --type-message: #3b82f6;
+  --type-alert: #dc2626;
+  --type-social: #f59e0b;
+  --type-system: #10b981;
+  --type-update: #8b5cf6;
+  --type-info: #06b6d4;
+  --type-financial: #059669;
+  --type-security: #b91c1c;
+  --type-technical: #4f46e5;
+  --type-communication: #ec4899;
+
+  /* Common Properties */
+  --card-border-radius: 12px;
+  --card-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --indicator-size: 8px;
+  --bar-width: 12px;
+  --bar-height: calc(100% + 10px);
+}
+
+/* ======================== BASE NOTIFICATION CARD ======================== */
+.notification-card {
+  position: relative;
+  border-radius: var(--card-border-radius);
+  border: 1px solid transparent;
+  transition: var(--card-transition);
+  backdrop-filter: blur(8px);
+  overflow: hidden;
+  
+}
+
+.notification-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: inherit;
+  z-index: -1;
+  border-radius: inherit;
+}
+
+/* ======================== PRIORITY STYLES ======================== */
+.notification-card[data-priority="risk"] {
+  background: var(--priority-risk-bg);
+  border-color: var(--priority-risk-border);
+  box-shadow: var(--priority-risk-shadow);
+}
+
+.notification-card[data-priority="high"] {
+  background: var(--priority-high-bg);
+  border-color: var(--priority-high-border);
+  box-shadow: var(--priority-high-shadow);
+}
+
+.notification-card[data-priority="mid"] {
+  background: var(--priority-mid-bg);
+  border-color: var(--priority-mid-border);
+  box-shadow: var(--priority-mid-shadow);
+}
+
+.notification-card[data-priority="low"] {
+  background: var(--priority-low-bg);
+  border-color: var(--priority-low-border);
+  box-shadow: var(--priority-low-shadow);
+}
+
+
+.read-indicator {
+  position: relative;
+  width: var(--indicator-size);
+  height: var(--indicator-size);
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #60a5fa, var(--type-message));
+  margin-left: 10px;
+  opacity: 1;
+  transition: var(--card-transition);
+  flex-shrink: 0;
+}
+
+.read-indicator::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 4px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  animation: pulse 2s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.7; transform: translate(-50%, -50%) scale(0.9); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+}
+
+.notification-card[data-read="true"] .read-indicator {
+  opacity: 0;
+  transform: scale(0);
+  margin-left: 0;
+  width: 0;
+  pointer-events: none;
+}
+
+
+.notification-card {
+  cursor: pointer;
+  will-change: transform, box-shadow;
+}
+
+.notification-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 8px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.notification-card:hover::after {
+  opacity: 1;
+  transform: scaleY(1.02);
+}
+
+.notification-card:active {
+  transform: translateY(0);
+  transition: transform 0.1s ease;
+}
+
+/* ======================== ACCESSIBILITY ENHANCEMENTS ======================== */
+.notification-card:focus {
+  outline: 2px solid var(--type-message);
+  outline-offset: 3px;
+  box-shadow: 
+    0 0 0 4px rgba(59, 130, 246, 0.1),
+    0 8px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.notification-card:focus-visible {
+  outline-style: solid;
+}
+
+.notification-card[aria-pressed="true"] {
+  background-color: rgba(59, 130, 246, 0.05);
+}
+
+/* ======================== PRIORITY-SPECIFIC FOCUS STATES ======================== */
+.notification-card[data-priority="risk"]:focus {
+  outline-color: #dc3545;
+  box-shadow: 
+    0 0 0 4px rgba(220, 53, 69, 0.1),
+    var(--priority-risk-shadow);
+}
+
+.notification-card[data-priority="high"]:focus {
+  outline-color: #f59e0b;
+  box-shadow: 
+    0 0 0 4px rgba(245, 158, 11, 0.1),
+    var(--priority-high-shadow);
+}
+
+.notification-card[data-priority="low"]:focus {
+  outline-color: #22c55e;
+  box-shadow: 
+    0 0 0 4px rgba(34, 197, 94, 0.1),
+    var(--priority-low-shadow);
+}
+
+/* ======================== DARK MODE SUPPORT ======================== */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --priority-risk-bg: linear-gradient(145deg, rgba(220, 53, 69, 0.12) 0%, rgba(185, 28, 28, 0.08) 100%);
+    --priority-high-bg: linear-gradient(145deg, rgba(245, 158, 11, 0.12) 0%, rgba(217, 119, 6, 0.08) 100%);
+    --priority-mid-bg: linear-gradient(145deg, rgba(59, 130, 246, 0.12) 0%, rgba(30, 64, 175, 0.08) 100%);
+    --priority-low-bg: linear-gradient(145deg, rgba(34, 197, 94, 0.12) 0%, rgba(21, 128, 61, 0.08) 100%);
+  }
+  
+  .notification-card:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+  
+  .read-indicator::before {
+    background: rgba(255, 255, 255, 0.95);
+  }
+}
+
+/* ======================== REDUCED MOTION SUPPORT ======================== */
+@media (prefers-reduced-motion: reduce) {
+  .notification-card,
+  .notification-card::after,
+  .read-indicator {
+    transition: none;
+    animation: none;
+  }
+  
+  .notification-card:hover {
+    transform: none;
+  }
+  
+  .read-indicator::before {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+/* ======================== HIGH CONTRAST MODE ======================== */
+@media (prefers-contrast: high) {
+  .notification-card {
+    border-width: 2px;
+    border-style: solid;
+  }
+  
+  .notification-card::after {
+    opacity: 1;
+    width: 6px;
+  }
+  
+  .read-indicator {
+    border: 2px solid currentColor;
+  }
+}
+
+.notification-card {
+  border-left: 4px solid transparent; /* default, overridden below */
+  border-radius: 12px;
+}
+
+.notification-card.message {
+  border-left-color: var(--type-message);
+}
+
+.notification-card.alert {
+  border-left-color: var(--type-alert);
+}
+
+.notification-card.social {
+  border-left-color: var(--type-social);
+}
+
+.notification-card.system {
+  border-left-color: var(--type-system);
+}
+
+.notification-card.update {
+  border-left-color: var(--type-update);
+}
+
+.notification-card.info {
+  border-left-color: var(--type-info);
+}
+
+.notification-card.financial {
+  border-left-color: var(--type-financial);
+}
+
+.notification-card.security {
+  border-left-color: var(--type-security);
+}
+
+.notification-card.technical {
+  border-left-color: var(--type-technical);
+}
+
+.notification-card.communication {
+  border-left-color: var(--type-communication);
+}

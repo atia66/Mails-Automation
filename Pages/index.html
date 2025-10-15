@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Notification Manager</title>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="../styles/main.css">
+        <link rel="stylesheet" href="../styles/slide-bar.css">
+        <link rel="stylesheet" href="../styles/nav-bar.css">
+        <link rel="stylesheet" href="../styles/classifer-style.css">
+        <link rel="stylesheet" href="../styles/mails.css">
+        <link rel="stylesheet" href="../styles/footer.css">
+    </head>
+    <body>
+        <div class="app-container">
+            <aside class="sidebar" id="sidebar">
+                <div class="sidebar-header">
+                    <div class="header">
+                        <div class="logo">
+                            <div class="logo-icon">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <div class="logo-text">NotifySync</div>
+                        </div>
+                    </div>
+                    <div class="Toggle">
+                        <button class="toggle-btn" onclick="toggleSidebar()">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="sidebar-content">
+                    <div class="nav-section">
+                        <button class="compose-btn" onclick="openComposer()">
+                            <i class="fas fa-plus"></i>
+                            <span class="compose-btn-text">New Notification</span>
+                        </button>
+                    </div>
+                    <div class="nav-section">
+                        <div class="nav-title">Inbox</div>
+                        <ul class="nav-list">
+                            <li class="nav-item">
+                                <a href="#" class="nav-link active" onclick="filterNotifications('all')">
+                                    <div class="nav-icon">
+                                        <i class="fas fa-inbox"></i>
+                                    </div>
+                                    <span class="nav-text">All Messages</span>
+                                    <div class="nav-badge">24</div>
+                                    <div class="nav-tooltip">All Messages</div>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link" onclick="filterNotifications('unread')">
+                                    <div class="nav-icon">
+                                        <i class="fas fa-envelope"></i>
+                                    </div>
+                                    <span class="nav-text">Unread</span>
+                                    <div class="nav-badge">8</div>
+                                    <div class="nav-tooltip">Unread Messages</div>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link" onclick="filterNotifications('starred')">
+                                    <div class="nav-icon">
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                    <span class="nav-text">Starred</span>
+                                    <div class="nav-badge">5</div>
+                                    <div class="nav-tooltip">Starred Messages</div>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link" onclick="filterNotifications('priority')">
+                                    <div class="nav-icon">
+                                        <i class="fas fa-flag"></i>
+                                    </div>
+                                    <span class="nav-text">Priority</span>
+                                    <div class="nav-badge">3</div>
+                                    <div class="nav-tooltip">Priority Messages</div>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="nav-section">
+                        <div class="nav-title">Categories</div>
+                        <ul class="nav-list">
+                            <li class="nav-item">
+                                <a href="#" class="nav-link" onclick="filterByCategory('message')">
+                                    <div class="nav-icon">
+                                        <i class="fas fa-comment"></i>
+                                    </div>
+                                    <span class="nav-text">Messages</span>
+                                    <div class="nav-badge">12</div>
+                                    <div class="nav-tooltip">Direct Messages</div>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link" onclick="filterByCategory('alert')">
+                                    <div class="nav-icon">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                    </div>
+                                    <span class="nav-text">Alerts</span>
+                                    <div class="nav-badge">4</div>
+                                    <div class="nav-tooltip">System Alerts</div>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link" onclick="filterByCategory('system')">
+                                    <div class="nav-icon">
+                                        <i class="fas fa-cog"></i>
+                                    </div>
+                                    <span class="nav-text">System</span>
+                                    <div class="nav-badge">6</div>
+                                    <div class="nav-tooltip">System Notifications</div>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link" onclick="filterByCategory('social')">
+                                    <div class="nav-icon">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                    <span class="nav-text">Social</span>
+                                    <div class="nav-badge">2</div>
+                                    <div class="nav-tooltip">Social Updates</div>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="nav-section">
+                        <div class="nav-title">Tools</div>
+                        <ul class="nav-list">
+                            <li class="nav-item">
+                                <a href="#" class="nav-link" onclick="openSettings()">
+                                    <div class="nav-icon">
+                                        <i class="fas fa-sliders-h"></i>
+                                    </div>
+                                    <span class="nav-text">Settings</span>
+                                    <div class="nav-tooltip">Application Settings</div>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link" onclick="openAnalytics()">
+                                    <div class="nav-icon">
+                                        <i class="fas fa-chart-line"></i>
+                                    </div>
+                                    <span class="nav-text">Analytics</span>
+                                    <div class="nav-tooltip">Usage Analytics</div>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link" onclick="exportData()">
+                                    <div class="nav-icon">
+                                        <i class="fas fa-download"></i>
+                                    </div>
+                                    <span class="nav-text">Export</span>
+                                    <div class="nav-tooltip">Export Data</div>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="user-profile">
+                    <div class="profile-card" onclick="toggleProfileMenu()">
+                        <div class="profile-avatar">JD</div>
+                        <div class="profile-info">
+                            <div class="profile-name">John Doe</div>
+                            <div class="profile-status">
+                                <div class="status-dot"></div>
+                                <!-- <span>Online</span> -->
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-up profile-chevron" style="color: var(--text-secondary);"></i>
+                    </div>
+                </div>
+            </aside>
+            <div class="main-content">
+                <div class="top-bar">
+                    <div class="top-bar-level">
+                        <div class="search-container">
+                            <div class="search-wrapper">
+                                <input
+                                    type="text"
+                                    class="search-input"
+                                    placeholder="Search notifications..."
+                                    id="searchInput"
+                                >
+                                <i class="fas fa-search search-icon"></i>
+                            </div>
+                        </div>
+                        <div class="toolbar">
+                            <button class="toolbar-btn active" onclick="toggleView('grid')" title="Grid View">
+                                <i class="fas fa-th"></i>
+                                <span>Grid</span>
+                            </button>
+                            <button class="toolbar-btn" onclick="toggleView('list')" title="List View">
+                                <i class="fas fa-list"></i>
+                                <span>List</span>
+                            </button>
+                            <button class="toolbar-btn" onclick="refreshNotifications()" title="Refresh">
+                                <i class="fas fa-sync-alt"></i>
+                                <span>Refresh</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="top-bar-level">
+                        <div style="flex: 1;"></div>
+                        <div class="auth-toolbar">
+                            <a class="toolbar-btn" href="./login.html" title="Login">
+                                <i class="fas fa-sign-in-alt"></i>
+                                Login
+                            </a>
+                            <a class="toolbar-btn" href="./Signup.html" title="Sign Up">
+                                <i class="fas fa-user-plus"></i>
+                                Sign Up
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="content-area">
+                    <div class="content-header">
+                        <h1 class="page-title">Notifications</h1>
+                        <div class="content-filters">
+                            <select class="filter-select" id="sortSelect" onchange="sortNotifications()">
+                                <option value="newest">Newest First</option>
+                                <option value="oldest">Oldest First</option>
+                                <option value="priority">By Priority</option>
+                                <option value="sender">By Sender</option>
+                                <option value="unread">Unread First</option>
+                            </select>
+                            <button class="toolbar-btn" onclick="markAllRead()">
+                                <i class="fas fa-check-double"></i>
+                                Mark All Read
+                            </button>
+                        </div>
+                    </div>
+                    <div class="notifications-list" id="notificationsGrid">
+                        <div
+                            class="notification-card message"
+                            data-priority="high"
+                            data-read="false"
+                            data-starred="false"
+                        >
+                            <div class="priority-indicator high"></div>
+                            <div class="card-header">
+                                <div class="sender-info">
+                                    <div class="sender-avatar">SJ</div>
+                                    <div class="sender-details">
+                                        <div class="sender-name">Sarah Johnson</div>
+                                        <div class="notification-time">
+                                            <i class="fas fa-clock"></i>
+                                            2 minutes ago
+                                            <div class="read-indicator"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-actions">
+                                    <button class="card-action-btn voice-btn" onclick="readVoice(this)" title="Read Voice">
+                                        <i class="fas fa-volume-up"></i>
+                                    </button>
+                                    <button class="card-action-btn " onclick="toggleStar(this)" title="Star">
+                                        <i class="fas fa-star"></i>
+                                    </button>
+                                    <button class="card-action-btn" onclick="toggleRead(this)" title="Mark as read">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    <button class="card-action-btn archive-btn" onclick="archiveNotification(this)" title="Archive">
+                                        <i class="fas fa-archive"></i>
+                                    </button>
+                                    <button class="card-action-btn delete-btn" onclick="deleteNotification(this)" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div class="notification-subject">
+                                    System Update Available
+                                </div>
+                                <div class="notification-preview">
+                                    A new system update is available with improved performance, new features, and security enhancements. Update now to get the latest improvements.
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <button class="action-btn primary" onclick="updateSystem(this)">
+                                    <i class="fas fa-download"></i>
+                                    Update Now
+                                </button>
+                                <button class="action-btn" onclick="viewChangelog(this)">
+                                    <i class="fas fa-list"></i>
+                                    View Changes
+                                </button>
+                                <button class="action-btn" onclick="scheduleUpdate(this)">
+                                    <i class="fas fa-calendar"></i>
+                                    Schedule Later
+                                </button>
+                            </div>
+                        </div>
+                        <div
+                            class="notification-card social"
+                            data-priority="low"
+                            data-read="true"
+                            data-starred="false"
+                        >
+                            <div class="priority-indicator low"></div>
+                            <div class="card-header">
+                                <div class="sender-info">
+                                    <div class="sender-avatar">MK</div>
+                                    <div class="sender-details">
+                                        <div class="sender-name">Mike Kumar</div>
+                                        <div class="notification-time">
+                                            <i class="fas fa-clock"></i>
+                                            3 hours ago
+                                            <div class="read-indicator"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-actions">
+                                    <button class="card-action-btn voice-btn" onclick="readVoice(this)" title="Read Voice">
+                                        <i class="fas fa-volume-up"></i>
+                                    </button>
+                                    <button class="card-action-btn " onclick="toggleStar(this)" title="Star">
+                                        <i class="fas fa-star"></i>
+                                    </button>
+                                    <button class="card-action-btn" onclick="toggleRead(this)" title="Mark as read">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    <button class="card-action-btn archive-btn" onclick="archiveNotification(this)" title="Archive">
+                                        <i class="fas fa-archive"></i>
+                                    </button>
+                                    <button class="card-action-btn delete-btn" onclick="deleteNotification(this)" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div class="notification-subject">
+                                    Shared Document: Q4 Marketing Strategy
+                                </div>
+                                <div class="notification-preview">
+                                    Mike has shared the Q4 Marketing Strategy document with you. The document includes campaign plans, budget allocations, and timeline for the upcoming quarter.
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <button class="action-btn primary" onclick="openDocument(this)">
+                                    <i class="fas fa-file-alt"></i>
+                                    Open Document
+                                </button>
+                                <button class="action-btn" onclick="downloadDocument(this)">
+                                    <i class="fas fa-download"></i>
+                                    Download
+                                </button>
+                                <button class="action-btn" onclick="shareDocument(this)">
+                                    <i class="fas fa-share"></i>
+                                    Share
+                                </button>
+                            </div>
+                        </div>
+                        <div
+                            class="notification-card message"
+                            data-priority="high"
+                            data-read="false"
+                            data-starred="false"
+                        >
+                            <div class="priority-indicator high"></div>
+                            <div class="card-header">
+                                <div class="sender-info">
+                                    <div class="sender-avatar">SJ</div>
+                                    <div class="sender-details">
+                                        <div class="sender-name">Sarah Johnson</div>
+                                        <div class="notification-time">
+                                            <i class="fas fa-clock"></i>
+                                            2 minutes ago
+                                            <div class="read-indicator"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-actions">
+                                    <button class="card-action-btn voice-btn" onclick="readVoice(this)" title="Read Voice">
+                                        <i class="fas fa-volume-up"></i>
+                                    </button>
+                                    <button class="card-action-btn " onclick="toggleStar(this)" title="Star">
+                                        <i class="fas fa-star"></i>
+                                    </button>
+                                    <button class="card-action-btn" onclick="toggleRead(this)" title="Mark as read">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    <button class="card-action-btn archive-btn" onclick="archiveNotification(this)" title="Archive">
+                                        <i class="fas fa-archive"></i>
+                                    </button>
+                                    <button class="card-action-btn delete-btn" onclick="deleteNotification(this)" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div class="notification-subject">
+                                    System Update Available
+                                </div>
+                                <div class="notification-preview">
+                                    A new system update is available with improved performance, new features, and security enhancements. Update now to get the latest improvements.
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <button class="action-btn primary" onclick="updateSystem(this)">
+                                    <i class="fas fa-download"></i>
+                                    Update Now
+                                </button>
+                                <button class="action-btn" onclick="viewChangelog(this)">
+                                    <i class="fas fa-list"></i>
+                                    View Changes
+                                </button>
+                                <button class="action-btn" onclick="scheduleUpdate(this)">
+                                    <i class="fas fa-calendar"></i>
+                                    Schedule Later
+                                </button>
+                            </div>
+                        </div>
+                        <div
+                            class="notification-card social"
+                            data-priority="low"
+                            data-read="true"
+                            data-starred="false"
+                        >
+                            <div class="priority-indicator low"></div>
+                            <div class="card-header">
+                                <div class="sender-info">
+                                    <div class="sender-avatar">MK</div>
+                                    <div class="sender-details">
+                                        <div class="sender-name">Mike Kumar</div>
+                                        <div class="notification-time">
+                                            <i class="fas fa-clock"></i>
+                                            3 hours ago
+                                            <div class="read-indicator"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-actions">
+                                    <button class="card-action-btn voice-btn" onclick="readVoice(this)" title="Read Voice">
+                                        <i class="fas fa-volume-up"></i>
+                                    </button>
+                                    <button class="card-action-btn " onclick="toggleStar(this)" title="Star">
+                                        <i class="fas fa-star"></i>
+                                    </button>
+                                    <button class="card-action-btn" onclick="toggleRead(this)" title="Mark as read">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    <button class="card-action-btn archive-btn" onclick="archiveNotification(this)" title="Archive">
+                                        <i class="fas fa-archive"></i>
+                                    </button>
+                                    <button class="card-action-btn delete-btn" onclick="deleteNotification(this)" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div class="notification-subject">
+                                    Shared Document: Q4 Marketing Strategy
+                                </div>
+                                <div class="notification-preview">
+                                    Mike has shared the Q4 Marketing Strategy document with you. The document includes campaign plans, budget allocations, and timeline for the upcoming quarter.
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <button class="action-btn primary" onclick="openDocument(this)">
+                                    <i class="fas fa-file-alt"></i>
+                                    Open Document
+                                </button>
+                                <button class="action-btn" onclick="downloadDocument(this)">
+                                    <i class="fas fa-download"></i>
+                                    Download
+                                </button>
+                                <button class="action-btn" onclick="shareDocument(this)">
+                                    <i class="fas fa-share"></i>
+                                    Share
+                                </button>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <div class="footer-bar">
+                        <div class="stats-bar">
+                            <div class="notification-stats">
+                                <div class="stat-item">
+                                    <div class="stat-icon unread">
+                                        <i class="fas fa-circle" style="font-size: 8px;"></i>
+                                    </div>
+                                    <span>12 Unread</span>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-icon read">
+                                        <i class="fas fa-check" style="font-size: 10px;"></i>
+                                    </div>
+                                    <span>48 Read</span>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-icon priority">
+                                        <i class="fas fa-exclamation" style="font-size: 10px;"></i>
+                                    </div>
+                                    <span>3 Priority</span>
+                                </div>
+                            </div>
+                            <div class="last-updated">
+                                Last updated:
+                                <span id="lastUpdated">2 minutes ago</span>
+                            </div>
+                        </div>
+                    </div> 
+                </div>
+            </div>
+        </div>
+        <button class="chat-trigger" onclick="toggleChat()" id="chatTrigger">
+            <i class="fas fa-comments"></i>
+        </button>
+        <div class="chat-widget" id="chatWidget">
+            <div class="chat-header">
+                <div class="chat-title">
+                    <i class="fas fa-robot" style="margin-right: 8px;"></i>
+                    Support Assistant
+                </div>
+                <button class="chat-close" onclick="toggleChat()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="chat-message bot">
+                    <i class="fas fa-robot" style="margin-right: 8px; color: var(--primary-color);"></i>
+                    Hi! I'm here to help you with your notifications. How can I assist you today?
+                </div>
+            </div>
+            <div class="chat-input-container">
+                <input
+                    type="text"
+                    class="chat-input"
+                    placeholder="Type your message..."
+                    id="chatInput"
+                    onkeypress="handleChatKeypress(event)"
+                >
+                <button class="chat-send" onclick="sendMessage()">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Settings Popup -->
+        <div id="settingsPopup" class="popup">
+            <div class="popup-content settings-content">
+                <span class="popup-close" onclick="closeSettings()">&times;</span>
+                <h2 class="popup-title">Application Settings</h2>
+                <!-- Settings Page Content -->
+                <form class="settings-form">
+                    <div class="form-group">
+                        <label>Theme</label>
+                        <select>
+                            <option>Light</option>
+                            <option>Dark</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Notifications</label>
+                        <input type="checkbox" checked>
+                        Enable alerts
+                    </div>
+                    <div class="form-group">
+                        <label>Language</label>
+                        <select>
+                            <option>English</option>
+                            <option>Arabic</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn-primary" onclick="closeSettings()">Save</button>
+                </form>
+            </div>
+        </div>
+    </body>
+    <script src="../src/slide-bar.js"></script>
+     
+</html>

@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gmail-Style Notifications</title>
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --shadow-primary: rgba(102, 126, 234, 0.2);
+            --bg-dark: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .header h2 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .notifications-container {
+            position: relative;
+            height: 70vh;
+            min-height: 400px;
+            max-height: 600px;
+        }
+
+        .notifications-list {
+            height: 100%;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 0;
+            margin: 0;
+            scroll-behavior: smooth;
+            /* Gmail-style scrolling */
+            scrollbar-width: thin;
+            scrollbar-color: rgba(102, 126, 234, 0.5) transparent;
+        }
+
+        /* Enhanced scrollbar styling for Gmail-like experience */
+        .notifications-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .notifications-list::-webkit-scrollbar-track {
+            background: transparent;
+            margin: 4px 0;
+        }
+
+        .notifications-list::-webkit-scrollbar-thumb {
+            background: rgba(102, 126, 234, 0.4);
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.2s ease;
+        }
+
+        .notifications-list::-webkit-scrollbar-thumb:hover {
+            background: rgba(102, 126, 234, 0.6);
+        }
+
+        .notifications-list::-webkit-scrollbar-thumb:active {
+            background: rgba(102, 126, 234, 0.8);
+        }
+
+        .notification-card {
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 0;
+            transition: all 0.2s ease;
+            position: relative;
+            cursor: pointer;
+            padding: 16px 24px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            min-height: 80px;
+        }
+
+        /* Gmail-style selection indicator */
+        .notification-card::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--primary-gradient);
+            opacity: 0;
+            transition: all 0.2s ease;
+        }
+
+        .notification-card:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-bottom-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .notification-card:hover::before {
+            opacity: 1;
+        }
+
+        .notification-card.selected {
+            background: rgba(102, 126, 234, 0.1);
+            border-bottom-color: rgba(102, 126, 234, 0.2);
+        }
+
+        .notification-card.selected::before {
+            opacity: 1;
+        }
+
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .notification-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 4px;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .notification-time {
+            font-size: 12px;
+            color: var(--text-secondary);
+            flex-shrink: 0;
+            margin-left: 12px;
+        }
+
+        .notification-message {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+            margin: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .notification-type {
+            font-size: 11px;
+            color: rgba(102, 126, 234, 0.8);
+            font-weight: 500;
+            margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Unread indicator */
+        .notification-card.unread {
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .notification-card.unread .notification-title {
+            font-weight: 700;
+        }
+
+        .notification-card.unread::after {
+            content: "";
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 8px;
+            height: 8px;
+            background: #4285f4;
+            border-radius: 50%;
+        }
+
+        /* Loading state */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 60px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        /* Empty state */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--text-secondary);
+            text-align: center;
+            padding: 40px;
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>📢 Notifications</h2>
+        </div>
+        
+        <div class="notifications-container">
+            <div class="notifications-list" id="notificationsList">
+                <!-- Sample notifications -->
+                <div class="notification-card unread">
+                    <div class="notification-icon">JD</div>
+                    <div class="notification-content">
+                        <div class="notification-header">
+                            <h3 class="notification-title">John Doe mentioned you</h3>
+                            <span class="notification-time">2 min ago</span>
+                        </div>
+                        <p class="notification-message">Hey @you, can you check this out? I think you might find this interesting for our project discussion.</p>
+                        <div class="notification-type">Mention</div>
+                    </div>
+                </div>
+
+                <div class="notification-card unread">
+                    <div class="notification-icon">💻</div>
+                    <div class="notification-content">
+                        <div class="notification-header">
+                            <h3 class="notification-title">System Update Available</h3>
+                            <span class="notification-time">1 hour ago</span>
+                        </div>
+                        <p class="notification-message">A new system update is ready to install. This update includes security improvements and bug fixes.</p>
+                        <div class="notification-type">System</div>
+                    </div>
+                </div>
+
+                <div class="notification-card">
+                    <div class="notification-icon">📧</div>
+                    <div class="notification-content">
+                        <div class="notification-header">
+                            <h3 class="notification-title">New Email Received</h3>
+                            <span class="notification-time">3 hours ago</span>
+                        </div>
+                        <p class="notification-message">You have received a new email from support@example.com regarding your recent inquiry.</p>
+                        <div class="notification-type">Email</div>
+                    </div>
+                </div>
+
+                <div class="notification-card">
+                    <div class="notification-icon">🎉</div>
+                    <div class="notification-content">
+                        <div class="notification-header">
+                            <h3 class="notification-title">Welcome to our platform!</h3>
+                            <span class="notification-time">1 day ago</span>
+                        </div>
+                        <p class="notification-message">Thank you for joining us. Here are some tips to get you started with your new account.</p>
+                        <div class="notification-type">Welcome</div>
+                    </div>
+                </div>
+
+                <div class="notification-card">
+                    <div class="notification-icon">⚠️</div>
+                    <div class="notification-content">
+                        <div class="notification-header">
+                            <h3 class="notification-title">Security Alert</h3>
+                            <span class="notification-time">2 days ago</span>
+                        </div>
+                        <p class="notification-message">We detected a login from a new device. If this wasn't you, please secure your account immediately.</p>
+                        <div class="notification-type">Security</div>
+                    </div>
+                </div>
+
+                <div class="notification-card">
+                    <div class="notification-icon">📈</div>
+                    <div class="notification-content">
+                        <div class="notification-header">
+                            <h3 class="notification-title">Weekly Report Ready</h3>
+                            <span class="notification-time">3 days ago</span>
+                        </div>
+                        <p class="notification-message">Your weekly analytics report is now available for download in your dashboard.</p>
+                        <div class="notification-type">Report</div>
+                    </div>
+                </div>
+
+                <div class="notification-card">
+                    <div class="notification-icon">👥</div>
+                    <div class="notification-content">
+                        <div class="notification-header">
+                            <h3 class="notification-title">Team Invitation</h3>
+                            <span class="notification-time">1 week ago</span>
+                        </div>
+                        <p class="notification-message">Sarah Johnson has invited you to join the Design Team workspace.</p>
+                        <div class="notification-type">Invitation</div>
+                    </div>
+                </div>
+
+                <div class="notification-card">
+                    <div class="notification-icon">🔄</div>
+                    <div class="notification-content">
+                        <div class="notification-header">
+                            <h3 class="notification-title">Backup Completed</h3>
+                            <span class="notification-time">1 week ago</span>
+                        </div>
+                        <p class="notification-message">Your data backup has been completed successfully. All files are safely stored.</p>
+                        <div class="notification-type">Backup</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add click functionality
+        document.querySelectorAll('.notification-card').forEach(card => {
+            card.addEventListener('click', function() {
+                // Remove selected class from all cards
+                document.querySelectorAll('.notification-card').forEach(c => c.classList.remove('selected'));
+                // Add selected class to clicked card
+                this.classList.add('selected');
+                // Remove unread status
+                this.classList.remove('unread');
+            });
+        });
+
+        // Smooth scrolling enhancement
+        const notificationsList = document.getElementById('notificationsList');
+        
+        // Add mouse wheel smooth scrolling
+        notificationsList.addEventListener('wheel', function(e) {
+            if (Math.abs(e.deltaY) < 50) {
+                e.preventDefault();
+                this.scrollTop += e.deltaY * 0.5;
+            }
+        });
+    </script>
+</body>
+</html>
